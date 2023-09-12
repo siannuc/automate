@@ -43,7 +43,7 @@ class Tool(tk.Tk):
         paths = __file__.split('/')
         dir = '/'.join(path for path in paths[:-1])
         dir += '/sounds/'
-        for file in glob.glob(dir + '*.mp3'):
+        for file in glob.glob(dir + '*.ogg'):
             # isolate exact name
             keyword = file[len(dir):-3]
             keyword = keyword[:-1]
@@ -56,7 +56,7 @@ class Tool(tk.Tk):
                     td['Sound'] = mixer.Sound(file)
         
         # add the start sound
-        self.start_sound = mixer.Sound(dir + 'Start.mp3')
+        self.start_sound = mixer.Sound(dir + 'Start.ogg')
 
         print(self.tasks)
         return
