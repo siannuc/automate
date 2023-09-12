@@ -1,15 +1,15 @@
 import tkinter as tk
 import glob
-import playsound
+from pygame import mixer
 
 class Tool(tk.Tk):
     def __init__(self, *args, **kwargs) -> None:
         import tkinter as tk
         tk.Tk.__init__(self, *args, **kwargs)
         self.wm_title("Test Application")
-        self.minsize(1080, 720)
+        self.minsize(800, 640)
 
-        self.grid_columnconfigure(3, minsize=200) 
+        self.grid_columnconfigure(3, minsize=10) 
         self.resizable = False
 
         self.timer = tk.Label(self, 
@@ -26,15 +26,18 @@ class Tool(tk.Tk):
                                    bg = 'green', 
                                    font = ('Arial',80), 
                                    width = 10)
-        self.start_btn.grid(row = 1, column = 0)
+        self.start_btn.grid(row = 2, column = 0, columnspan=4)
 
         self.task_label = tk.Label(self, text = "INVESTING CYCLE", font = ('Arial',80), justify='center')
-        self.task_label.grid(row = 1, column = 1, columnspan = 3)
+        self.task_label.grid(row = 1, column = 1, columnspan = 4)
 
         self.tasks = {245:{'Text':'Turn Off Mixing', 'fg':'Yellow', 'Sound':None},
                       240:{'Text':'Purge Valves and Fill Flasks', 'fg':'red', 'Sound':None},
                       30:{'Text':'Turn Off Vacuum', 'fg':'green', 'Sound':None},
                       2:{'Text':'Remove Flasks', 'fg':'red', 'Sound':None}}
+        
+        # init sounds player
+        mixer.init()
         
         # look for sounds
         paths = __file__.split('/')
@@ -50,10 +53,10 @@ class Tool(tk.Tk):
                 print('KW', keyword)
                 # check if names match
                 if td['Text'] == keyword:
-                    td['Sound'] = file
+                    td['Sound'] = mixer.Sound(file)
         
         # add the start sound
-        self.start_sound = dir + 'Start.mp3'
+        self.start_sound = mixer.Sound(dir + 'Start.mp3')
 
         print(self.tasks)
         return
@@ -61,7 +64,7 @@ class Tool(tk.Tk):
     def start_btn_cb(self,):
         # is timer running
         if self.timer_flag:
-            playsound.playsound(self.start_sound)
+            self.start_sound.play(0)
             # Start Countdown timer
             self.timer_flag = False
             self.timer_cb()
@@ -98,7 +101,7 @@ class Tool(tk.Tk):
                     # Play Sounds
                     sound = self.tasks[key]['Sound']
                     if sound is not None:
-                        playsound.playsound(sound)
+                        sound.play(0)
                     break
         else:
             self.task_label.configure(text = 'INVESTING CYCLE')
