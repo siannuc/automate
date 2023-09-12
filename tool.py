@@ -14,7 +14,7 @@ class Tool(tk.Tk):
 
         self.timer = tk.Label(self, 
                               text = '8:00',
-                              font = ('Arial',180),
+                              font = ('Arial',120),
                               justify='center')
         self.timer.grid(row = 0, column = 0, columnspan=4)
 
@@ -24,11 +24,11 @@ class Tool(tk.Tk):
         self.start_btn = tk.Button(self, text = 'Start', 
                                    command=self.start_btn_cb, 
                                    bg = 'green', 
-                                   font = ('Arial',80), 
+                                   font = ('Arial',50), 
                                    width = 10)
         self.start_btn.grid(row = 2, column = 0, columnspan=4)
 
-        self.task_label = tk.Label(self, text = "INVESTING CYCLE", font = ('Arial',80), justify='center')
+        self.task_label = tk.Label(self, text = "INVESTING CYCLE", font = ('Arial',50), justify='center')
         self.task_label.grid(row = 1, column = 1, columnspan = 4)
 
         self.tasks = {245:{'Text':'Turn Off Mixing', 'fg':'Yellow', 'Sound':None},
