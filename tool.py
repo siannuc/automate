@@ -1,7 +1,6 @@
 import tkinter as tk
 import glob
 import playsound
-import RPi.GPIO as GPIO
 
 class Tool(tk.Tk):
     def __init__(self, *args, **kwargs) -> None:
@@ -22,19 +21,12 @@ class Tool(tk.Tk):
         self.seconds = 8*60
         self.timer_flag:bool = True
 
-        # Button Stuff
-        button_pin = 16
-        GPIO.setup(GPIO.BCM)
-        GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(button_pin, GPIO.FALLING,
-            callback=self.start_btn_cb, bouncetime=100)
-
-        # self.start_btn = tk.Button(self, text = 'Start', 
-        #                            command=self.start_btn_cb, 
-        #                            bg = 'green', 
-        #                            font = ('Arial',80), 
-        #                            width = 10)
-        # self.start_btn.grid(row = 1, column = 0)
+        self.start_btn = tk.Button(self, text = 'Start', 
+                                   command=self.start_btn_cb, 
+                                   bg = 'green', 
+                                   font = ('Arial',80), 
+                                   width = 10)
+        self.start_btn.grid(row = 1, column = 0)
 
         self.task_label = tk.Label(self, text = "INVESTING CYCLE", font = ('Arial',80), justify='center')
         self.task_label.grid(row = 1, column = 1, columnspan = 3)
@@ -74,7 +66,7 @@ class Tool(tk.Tk):
             self.timer_flag = False
             self.timer_cb()
             # Change Button to stop
-            # self.start_btn.configure(text = 'STOP', bg = 'red')
+            self.start_btn.configure(text = 'STOP', bg = 'red')
         else:
             # reset timer
             self.timer_flag = True
