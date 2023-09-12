@@ -1,9 +1,11 @@
 import tkinter as tk
 import glob
 import playsound
+import RPi.GPIO as GPIO
 
 class Tool(tk.Tk):
     def __init__(self, *args, **kwargs) -> None:
+        import tkinter as tk
         tk.Tk.__init__(self, *args, **kwargs)
         self.wm_title("Test Application")
         self.minsize(1080, 720)
@@ -20,43 +22,59 @@ class Tool(tk.Tk):
         self.seconds = 8*60
         self.timer_flag:bool = True
 
-        self.start_btn = tk.Button(self, text = 'START', 
-                                   command=self.start_btn_cb, 
-                                   bg = 'green', 
-                                   font = ('Arial',80), 
-                                   width = 10)
-        self.start_btn.grid(row = 1, column = 0)
+        # Button Stuff
+        button_pin = 16
+        GPIO.setup(GPIO.BCM)
+        GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.add_event_detect(button_pin, GPIO.FALLING,
+            callback=self.start_btn_cb, bouncetime=100)
+
+        # self.start_btn = tk.Button(self, text = 'Start', 
+        #                            command=self.start_btn_cb, 
+        #                            bg = 'green', 
+        #                            font = ('Arial',80), 
+        #                            width = 10)
+        # self.start_btn.grid(row = 1, column = 0)
 
         self.task_label = tk.Label(self, text = "INVESTING CYCLE", font = ('Arial',80), justify='center')
         self.task_label.grid(row = 1, column = 1, columnspan = 3)
 
-        self.tasks = {479:{'Text':'Mixing', 'fg':'Yellow', 'Sound':None},
-                      460:{'Text':'END Mixing', 'fg':'red', 'Sound':None},
-                      440:{'Text':'Vacuum', 'fg':'green', 'Sound':None},
-                      430:{'Text':'END', 'fg':'red', 'Sound':None}}
+        self.tasks = {245:{'Text':'Turn Off Mixing', 'fg':'Yellow', 'Sound':None},
+                      240:{'Text':'Purge Valves and Fill Flasks', 'fg':'red', 'Sound':None},
+                      30:{'Text':'Turn Off Vacuum', 'fg':'green', 'Sound':None},
+                      2:{'Text':'Remove Flasks', 'fg':'red', 'Sound':None}}
         
         # look for sounds
         paths = __file__.split('/')
-        dir = paths[:-1].join('/') + '/sounds/'
+        dir = '/'.join(path for path in paths[:-1])
+        dir += '/sounds/'
         for file in glob.glob(dir + '*.mp3'):
             # isolate exact name
             keyword = file[len(dir):-3]
+            keyword = keyword[:-1]
 
             for tk, td in self.tasks.items():
+                print('TD', td['Text'])
+                print('KW', keyword)
                 # check if names match
-                if td['Name'] == keyword:
+                if td['Text'] == keyword:
                     td['Sound'] = file
+        
+        # add the start sound
+        self.start_sound = dir + 'Start.mp3'
 
+        print(self.tasks)
         return
 
     def start_btn_cb(self,):
         # is timer running
         if self.timer_flag:
+            playsound.playsound(self.start_sound)
             # Start Countdown timer
             self.timer_flag = False
             self.timer_cb()
             # Change Button to stop
-            self.start_btn.configure(text = 'STOP', bg = 'red')
+            # self.start_btn.configure(text = 'STOP', bg = 'red')
         else:
             # reset timer
             self.timer_flag = True
